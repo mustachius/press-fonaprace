@@ -1,0 +1,1401 @@
+---
+title: "V Pesquisa Nacional de Perfil dos Graduandos das IFES - 2018 "
+subtitle: "Análise comparativa: UFFS/Região Sul/Brasil"
+author: "Pró - Reitoria de Assuntos Estudantis"
+institute: "Universidade Federal da Fronteira Sul - UFFS"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    css: [default, uo, rutgers-fonts]
+    lib_dir: libs
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE, digits = 3)
+```
+
+```{r include=FALSE}
+library(tidyverse)
+library(scales)
+library(knitr)
+library(kableExtra)
+library(formattable)
+library(dplyr)
+library(readxl)
+library(ggrepel)
+library(RColorBrewer)
+library(ggpubr)
+```
+
+background-image: url("https://raw.githubusercontent.com/mustachius/ProjetosR/master/Imagem1.png")
+background-position: top, 80%
+background-size: 30%
+class: center, middle
+
+```{r PartUFFS, include=FALSE}
+PartUFFS<-read.table("ParticipacaoUFFS.txt",header = T, sep = "\t", encoding="UTF-8")
+PartIFES<-read.csv("Ranking Detalhado das IFES.csv", header = T, encoding="UTF-8")
+aeUffs<-readRDS("aeUffs.rds")
+
+row.names(PartIFES) <- NULL
+colnames(PartIFES)[1] <- "classificacao"
+
+#workbook1 <- lapply(excel_sheets("dados_for_r.xlsx"),
+#                      read_xlsx,
+#                      path = "dados_for_r.xlsx")
+
+workbook2 <- lapply(excel_sheets("dados_for_r_freq.xlsx"),
+                      read_xlsx,
+                      path = "dados_for_r_freq.xlsx")
+
+my_colors <- brewer.pal(4, "Greens")[2:4]
+
+
+posn_d<- position_dodge(width = 0.5)
+```
+
+<br>
+
+# Apresentação
+
+Prof. Dr. Darlan Christiano Kroth <br>
+<a href="mailto:dckroth@uffs.edu.br"></i>&nbsp; dckroth@uffs.edu.br</a><br>
+
+# Slides remark.js:
+João Víctor Balestrin Sartor <br>
+<a href="mailto: joao.sartor@uffs.edu.br"></i>&nbsp; joao.sartor@uffs.edu.br</a><br>
+---
+class: center, middle, inverse
+
+# A Pesquisa
+---
+# Pesquisa do Perfil Socioeconômico dos Estudantes das Instituições Federais de Ensino Superior
+
+## Organização: 
+ - Associação Nacional dos Dirigentes das Intituições Federais de Ensino Superior - **Andifes**;
+ - Fórum Nacional de Pró-Reitores de Assistência Estudantil - **FONAPRACE**;
+ - Universidade Federal de São Carlos - **UFSCar**.
+ 
+ > A principal inovação desta Pesquisa, considerando a edição anterior, **é que ela foi censitária**, ou seja, **todos os estudantes das IFES foram convidados a participar**, o que contribuiu para o conhecimento do **perfil mais exato possível dos graduandos ativos nos cursos presenciais do país**.
+
+---
+class: center
+# Participação por estado
+
+```{r include=FALSE}
+by_uf<- PartUFFS %>%
+  group_by(uf) %>%
+  summarize(totalEst = sum(totalEstudantes), totalPart = sum(estParticipantes)) 
+
+tidy_by_uf <- by_uf %>%
+  mutate(totalPart = round((totalPart/totalEst)*100)) %>%
+  mutate(totalEst = round(100-totalPart)) %>%
+  gather(key, value, -uf)
+
+val = c("#008000", "#006400")
+lab = c("Total Estudantes", "Participantes")
+pPart = round((by_uf$totalPart/by_uf$totalEst) *100)
+
+pby_uf <- ggplot(tidy_by_uf, aes(x = uf, y = value, fill = key))+
+  geom_bar(stat = "identity") + 
+  scale_y_continuous("Estudantes (%)") +
+  scale_x_discrete("Estado") +
+  scale_fill_manual(values = my_colors, labels = lab) +
+  theme_light() +
+  labs(fill=" ") +
+  geom_text_repel(aes(x = uf, y = value, label = value),position=position_stack(0.5), size = 2.5, vjust = 1) 
+  
+```
+
+.pull-left[
+```{r fig.retina = 4, echo=FALSE}
+pby_uf
+```
+]
+```{r echo=FALSE}
+names(by_uf) <- c("Estado", "N° Estudantes", "Participantes")
+kby_uf<-kable(by_uf, format = "html")
+```
+
+<br>
+<br>
+.pull-right[
+### Estudantes por estado
+`r kby_uf`
+]
+---
+class: center, middle
+# Participação por campus da UFFS (em relação ao total)
+```{r, include=FALSE}
+by_campus <- PartUFFS %>%
+  group_by(campus) %>%
+  summarize(total = sum(estParticipantes))
+
+by_campus$campus <- c("Cerro Largo", "Chapecó", "Erechim", "Laranjeiras \n do Sul", "Passo Fundo", "Realeza")
+
+pby_campus <- ggplot(by_campus, aes(x = campus, y = total)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  geom_text(aes(label = sprintf("%.2f%%", total/sum(total) * 100)), vjust = -.5) +
+  scale_y_continuous("Estudantes (%)") +
+  scale_x_discrete(" ") +
+  theme_light()
+
+by_curso <- PartUFFS %>%
+  group_by(curso) %>%
+  summarize(total = sum(estParticipantes))
+
+by_curso1<-top_n(by_curso, n = 7)
+by_curso1$curso <- c("Administração", "Agronomia", "Ciências \n Biológicas", "Eng. \n Ambiental", "História", "Letras", "Pedagogia")
+
+pby_curso <- ggplot(by_curso1, aes(x = curso, y = total)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  geom_text(aes(label = sprintf("%.2f%%", total/sum(total) * 100)), vjust = -.5)+
+  scale_y_continuous("Estudantes (%)") +
+  scale_x_discrete(" ") +
+  theme_light()
+  
+``` 
+
+.pull-left[
+```{r fig.retina = 5, echo=FALSE}
+pby_campus
+```
+]
+
+.pull-rigth[
+```{r fig.retina = 5, echo = FALSE}
+pby_curso
+```
+]
+---
+# Participação da UFFS em relação à outras IFES
+```{r echo=F, warning=F}
+by_ifes<- PartIFES %>%
+  mutate(p100 = porcentagem *100)
+
+by_ifes_tidy <- by_ifes[c(1:5,28,60:65), c(1:5,7)]
+by_ifes_tidy <- as.tibble(by_ifes_tidy)
+names(by_ifes_tidy) <- c("Classificação", "IFES", "Sigla", "Nº Estudantes", "Participantes", "%")
+
+kable(by_ifes_tidy,"html", include.rownames = FALSE) %>%
+  row_spec(6, bold = T, color = "white", background = "#D7261E") %>%
+  kable_styling()
+```
+---
+class: center, middle
+# Participação por ano de ingresso
+```{r fig.retina = 5,ano_ingresso, echo=FALSE, warning=FALSE}
+by_ano_ingresso <- workbook2[[1]]
+names(by_ano_ingresso) <- c("Ano", "UFFS", "Sul", "Brasil")
+
+by_ano_ingresso_semtotal <- by_ano_ingresso[c(1:9),c(1,3,5,7)] 
+names(by_ano_ingresso_semtotal) <- c("Ano", "UFFS", "Sul", "Brasil")
+
+by_ano_ingresso_freq <- by_ano_ingresso_semtotal %>%
+  gather(key, value, -Ano)
+
+by_ano_ingresso_freq %>%
+  ggplot(aes(x = Ano, y = value, fill = key)) + 
+  scale_fill_manual(values = my_colors) + 
+  scale_y_continuous(breaks = c(0,10,20,30,40,50,60)) +
+  ylab("%") +
+  xlab(" ") +
+  labs(fill=" ") +
+  geom_bar(stat = "identity") +
+  theme_light() +
+  geom_text(aes(x = Ano, y = value, label = round(value)),position=position_stack(vjust=0.9), size = 2.5)
+```
+---
+class: center, middle, inverse
+
+# Categoria 1: Perfil básico
+---
+class: center, middle
+# País de origem diferente do Brasil
+```{r fig.retina = 5, echo=FALSE}
+by_pais <- workbook2[[5]]
+by_pais <- by_pais[c(1:6), c(1,3,5,7)]
+
+by_pais_tidy <- by_pais %>%
+  gather(key, value, -pais_nasc) %>%
+  filter(pais_nasc != "Brasil")
+
+by_pais_tidy %>%  
+  ggplot(aes(x=pais_nasc, y=value, fill=key)) +
+  scale_fill_manual(values = my_colors) + 
+  ylab("%") +
+  xlab(" ") +
+  geom_bar(stat = "identity") +
+  theme_light() +
+  geom_text_repel(aes(x = pais_nasc, y = value, label = round(value, digits = 3)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: center, middle
+# Por estado de origem
+```{r fig.retina=5, by_uf, echo=F}
+by_uf<-workbook2[[6]]
+by_uf<- by_uf[c(1:29), c(1,3,5,7)]
+by_uf_top10<-top_n(by_uf, 6, UFFS)
+
+by_uf_top10 <- by_uf_top10 %>%
+  slice(2:6) %>%
+  gather(key, value, -estado_nasc)
+  
+ggplot(by_uf_top10, aes(x = estado_nasc, y = value, fill = key)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = my_colors) + 
+  ylab("%") +
+  xlab(" ") +
+  theme_light() +
+  geom_text_repel(aes(x = estado_nasc, y = value, label = round(value)),position=position_stack(vjust=0.9), size = 2.5, vjust = 1)
+```
+---
+class: center, middle
+
+# Participantes por sexo
+```{r by_sexo, echo=F, include=F}
+by_sexo <- workbook2[[7]]
+by_sexo <- by_sexo[c(1:3), c(1,3,5,7)]
+
+by_sexo_tidy <- by_sexo %>%
+  gather(key, value, -sexo) %>%
+  filter(sexo != "Sem declaração")
+
+pby_sexo<-ggplot(by_sexo_tidy, aes(x = sexo, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d, alpha = 1) +
+  ylab("%") +
+  scale_fill_manual(values = my_colors) +
+  xlab(" ") +
+  theme_light() +
+  geom_text(aes(x = sexo, y = value, label = round(value)),position=position_dodge(0.5), size = 2.5)
+```
+
+
+```{r fig.retina=5, echo=F}
+pby_sexo
+```
+
+---
+class: center, middle
+
+# Por Gênero
+```{r by_genero, echo=F, warning=FALSE}
+by_genero <- workbook2[[8]]
+by_genero <- by_genero[c(1:8), c(1,3,5,7)]
+
+by_genero_tidy1 <- by_genero %>%
+  gather(key, value, -genero) %>%
+  filter(genero == c("Mulher Cis", "Homem Cis", "Não Classificado", "Não Respondido" ))
+
+by_genero_tidy2 <- by_genero %>%
+  gather(key, value, -genero) %>%
+  filter(genero != c("Mulher Cis", "Homem Cis", "Não Classificado", "Não Respondido" ))
+
+pby_genero1 <- ggplot(by_genero_tidy1, aes(x = genero, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text(aes(x = genero, y = value, label = round(value)),position=position_dodge(0.5), size = 3, digits = "3")
+
+pby_genero2 <- ggplot(by_genero_tidy2, aes(x = genero, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text(aes(x = genero, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+```
+
+.pull-left[
+```{r fig.retina = 5, echo=F, warning=F}
+pby_genero1
+```
+]
+
+.pull-rigth[
+```{r fig.retina = 5, echo = F, warning=F}
+pby_genero2
+```
+]
+---
+class: center, middle
+
+# Por orientação sexual
+
+```{r fig.retina = 5, echo = F, warning = F, message=FALSE}
+by_orient_sex <- workbook2[[9]]
+by_orient_sex <- by_orient_sex[c(1:8), c(1,3,5,7)]
+
+by_orient_sex_tidy1 <- top_n(by_orient_sex, n = 4)
+by_orient_sex_tidy1%>%
+  gather(key, value, -ori_sex) %>%
+  ggplot(aes(x = ori_sex, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "Greens") +
+  theme_light() +
+  geom_text(aes(x = ori_sex, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+
+by_orient_sex_tidy2 <- top_n(by_orient_sex, n = -4)
+by_orient_sex_tidy2%>%
+  gather(key, value, -ori_sex) %>%
+  ggplot(aes(x = ori_sex, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text(aes(x = ori_sex, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+```
+---
+class: center, middle
+
+# Por auto-declaração de cor
+```{r fig.retina = 5, echo = F, warning = F, message=FALSE}
+by_cor <- workbook2[[10]]
+by_cor <- by_cor[c(1:8), c(1,3,5,7)]
+
+by_cor_tidy1 <- top_n(by_cor, n = 4)
+by_cor_tidy1 %>% 
+  gather(key, value, -cor) %>%
+  ggplot(aes(x = cor, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text(aes(x = cor, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+
+by_cor_tidy2 <- top_n(by_cor, n = -4)
+by_cor_tidy2 %>% 
+  gather(key, value, -cor) %>%
+  ggplot(aes(x = cor, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text(aes(x = cor, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+```
+---
+class: center, middle
+
+# Estado civil / Situação conjugal atual:
+
+```{r fig.retina = 5, echo = F, warning = F, message=FALSE}
+by_estadocivil <- workbook2[[11]]
+by_estadocivil <- by_estadocivil[c(1:4), c(1,3,5,7)]
+
+by_estadocivil_tidy1 <- top_n(by_estadocivil, n = 2)
+  
+by_estadocivil_tidy1 %>%
+  gather(key, value, -estado_civil) %>%
+  ggplot(aes(x = estado_civil, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text(aes(x = estado_civil, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+
+by_estadocivil_tidy2 <- top_n(by_estadocivil, n = -2)
+
+by_estadocivil_tidy2 %>%
+  gather(key, value, -estado_civil) %>%
+  ggplot(aes(x = estado_civil, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text(aes(x = estado_civil, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+
+```
+
+---
+class: center, middle
+
+# Você tem filhos? / Algum de seus filhos mora com você?
+
+```{r fig.retina = 5, echo = F, warning = F, message=FALSE}
+by_filhos <- workbook2[[12]]
+by_filhos <- by_filhos[c(1:5), c(1,3,5,7)]
+
+by_filhos %>%
+  gather(key, value, -filhos) %>%
+  ggplot(aes(x = filhos, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text_repel(aes(x = filhos, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+
+by_mora_filhos <- workbook2[[13]]
+by_mora_filhos <- by_mora_filhos[c(1:3), c(1,3,5,7)]
+
+by_mora_filhos %>%
+  gather(key, value, -mora_filho) %>%
+  ggplot(aes(x = mora_filho, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text_repel(aes(x = mora_filho, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+
+```
+---
+class: center, middle
+
+# Você tem filhos de 0 e 5 anos?
+
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+by_filhos_5anos <- workbook2[[14]]
+by_filhos_5anos <- by_filhos_5anos[c(1:6), c(1,3,5,7)]
+
+by_filhos_5anos_tidy1 <- top_n(by_filhos_5anos, n = 3, UFFS)
+  
+by_filhos_5anos_tidy1 %>%
+  gather(key, value, -quant_filhos05anos) %>%
+  ggplot(aes(x = quant_filhos05anos, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text(aes(x = quant_filhos05anos, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+
+
+by_filhos_5anos_tidy2 <- top_n(by_filhos_5anos, n = -3, UFFS)
+  
+by_filhos_5anos_tidy2 %>%
+  gather(key, value, -quant_filhos05anos) %>%
+  ggplot(aes(x = quant_filhos05anos, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text(aes(x = quant_filhos05anos, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+```
+---
+Class: center, middle
+
+# Em seu perído de aula, onde ou com quem ficam seus filhos(as) de 0 a 5 anos?
+
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+local_filho <- workbook2[[15]]
+local_filho <- local_filho[c(1:8), c(1,3,5,7)]
+
+local_filho_tidy1 <- top_n(local_filho, n = 4, UFFS)
+
+local_filho_tidy1 %>%
+  gather(key, value, -ondefica_filho) %>%
+  ggplot(aes(x = ondefica_filho, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text(aes(x = ondefica_filho, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+
+```
+---
+class: middle, center, inverse
+
+# Categoria 2: Itinerários estudantis e perfil acadêmico
+---
+classe: middle, center
+# A maior parte do Ensino Médio que você cursou foi:
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+by_em <- workbook2[[16]]
+by_em <- by_em[c(1:5), c(1,3,5,7)]
+
+by_em %>%
+  gather(key, value, -grad_em) %>%
+  ggplot(aes(x = grad_em, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text_repel(aes(x = grad_em, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+```
+---
+class: center, middle 
+# Você frequentou algum cursinho antes de ingressar na universidade?
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+by_cursinho <- workbook2[[18]]
+by_cursinho <- by_cursinho[c(1:4), c(1,3,5,7)]
+
+by_cursinho %>%
+  gather(key, value, -cursinho) %>%
+	ggplot(aes(x=key, y=value, fill=str_wrap(cursinho, 20))) +
+	ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "Greens") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity") +
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1)
+```
+---
+class: center, middle
+# Como você ingressou nesta universidade?
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+forma_ingresso <- workbook2[[19]]
+forma_ingresso <- forma_ingresso[c(1:7), c(1,3,5,7)]
+
+forma_ingresso1 <- top_n(forma_ingresso, n = 3, UFFS)
+forma_ingresso2 <- top_n(forma_ingresso, n = -3, UFFS)
+
+forma_ingresso1 %>%
+  gather(key, value, -forma_ingresso) %>%
+  ggplot(aes(x = str_wrap(forma_ingresso,20), y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text_repel(aes(x = forma_ingresso, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+
+forma_ingresso2 %>%
+  gather(key, value, -forma_ingresso) %>%
+  ggplot(aes(x = str_wrap(forma_ingresso,20), y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text_repel(aes(x = forma_ingresso, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+
+```
+---
+class: center, middle
+# O seu ingresso nesta universidade foi através de:
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+tipo_ingresso <- workbook2[[20]]
+tipo_ingresso <- tipo_ingresso[c(1:2), c(1,3,5,7)]
+
+tipo_ingresso %>%
+  gather(key, value, -forma_ingresso2) %>%
+  ggplot(aes(x = str_wrap(forma_ingresso2,20), y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text_repel(aes(x = forma_ingresso2, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+```
+---
+class: center, middle
+#A cota em que você ingressou é de escola pública? / Pretos, pardos indígenas?
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+cota_escola <- workbook2[[21]]
+cota_escola <- cota_escola[c(1:3), c(1,3,5,7)]
+
+cota_escola %>%
+  gather(key, value, -cota_escolap) %>%
+  ggplot(aes(x = str_wrap(cota_escolap,20), y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text_repel(aes(x = cota_escolap, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+
+cotas_ppindi <- workbook2[[22]]
+cotas_ppindi <- cotas_ppindi[c(1:3), c(1,3,5,7)]
+
+cotas_ppindi %>%
+  gather(key, value, -cotas_ppindigenas) %>%
+  ggplot(aes(x = str_wrap(cotas_ppindigenas,20), y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text_repel(aes(x = cotas_ppindigenas, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
+```
+---
+class: center, middle
+# A cota em que você ingressou é para renda bruta per capita igual ou inferior a 1,5 salários mínimos?
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+renda_15sm <- workbook2[[23]]
+renda_15sm <- renda_15sm[c(1:3), c(1,3,5,7)]
+
+renda_15sm %>%
+  gather(key, value, -Renda_1.5sm) %>%
+  ggplot(aes(x = str_wrap(Renda_1.5sm,20), y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text_repel(aes(x = Renda_1.5sm, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
+```
+---
+class: center, middle
+# Você participa de alguma atividade ou programa ACADÊMICO?
+.pull-left[###Extensão
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+grad_ext <- workbook2[[28]]
+grad_ext <- grad_ext[c(1:2), c(1,3,5,7)]
+
+grad_ext %>%
+  gather(key, value, -grad_extensao) %>%
+  ggplot(aes(x = grad_extensao, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text_repel(aes(x = grad_extensao, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1) 
+```
+]
+--
+.pull-left[###Pesquisa
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE} 
+grad_pes <- workbook2[[29]]
+grad_pes <- grad_pes[c(1:2), c(1,3,5,7)]
+
+grad_pes %>%
+  gather(key, value, -grad_pesquisa) %>%
+  ggplot(aes(x = grad_pesquisa, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text_repel(aes(x = grad_pesquisa, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1) 
+```
+]
+---
+class: middle, center, inverse
+# Itinerários estudantis e perfil cultural
+## Assistência Estudantil
+---
+class: middle, center
+# Você participa ou participou de algum Programa de Assistência Estudantil oferecido pela sua Universidade? 
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+tidy_aeUffs<-aeUffs %>%
+  gather(key, value, -tema, -resposta)
+
+tidy_aeUffs_semtotal <- tidy_aeUffs %>%
+  filter(resposta != "Total")
+
+tidy_aeUffs_semtotal %>%
+  group_by(factor(key)) %>%
+  filter(tema == "part_ae") %>%
+  ggplot(aes(x=key, y=value, fill = str_wrap(resposta, 20))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")
+```
+---
+class: middle, center
+# AE: Programas de alimentação
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+part_ae_alim <- workbook2[[31]]
+part_ae_alim <- part_ae_alim[c(1:2), c(1,3,5,7)]
+
+part_ae_alim %>%
+  gather(key, value, -part_ae_alimentacao) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(part_ae_alimentacao))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# AE: Programas de Moradia
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+part_ae_moradia <- workbook2[[32]]
+part_ae_moradia <- part_ae_moradia[c(1:2), c(1,3,5,7)]
+
+part_ae_moradia %>%
+  gather(key, value, -part_ae_moradia) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(part_ae_moradia))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+
+```
+---
+class: middle, center
+# AE: Programas de atendimento psicológico
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+part_ae_psico <- workbook2[[33]]
+part_ae_psico <- part_ae_psico[c(1:2), c(1,3,5,7)]
+
+part_ae_psico %>%
+  gather(key, value, -part_ae_atendpsico) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(part_ae_atendpsico))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# AE: Programas de apoio pedagógico
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+part_ae_apoioped <- workbook2[[34]]
+part_ae_apoioped <- part_ae_apoioped[c(1:2), c(1,3,5,7)]
+
+part_ae_apoioped %>%
+  gather(key, value, -part_ae_apoioped) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(part_ae_apoioped))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# AE: Programas de saúde e atendimento médico
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+part_ae_atendmed <- workbook2[[35]]
+part_ae_atendmed <- part_ae_atendmed[c(1:2), c(1,3,5,7)]
+
+part_ae_atendmed %>%
+  gather(key, value, -part_ae_atendmed) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(part_ae_atendmed))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+
+```
+---
+class: middle, center
+# AE: Programas de transporte
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+
+part_ae_transp <- workbook2[[36]]
+part_ae_transp <- part_ae_transp[c(1:2), c(1,3,5,7)]
+
+
+part_ae_transp %>%
+  gather(key, value, -part_ae_transp) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(part_ae_transp))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# AE: Programas de auxílio creche
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+
+part_ae_creche <- workbook2[[37]]
+part_ae_creche <- part_ae_creche[c(1:2), c(1,3,5,7)]
+
+part_ae_creche %>%
+  gather(key, value, -part_ae_creche) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(part_ae_creche))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# AE: Programas de esporte
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+part_ae_esporte <- workbook2[[38]]
+part_ae_esporte <- part_ae_esporte[c(1:2), c(1,3,5,7)]
+
+part_ae_esporte %>%
+  gather(key, value, -part_ae_esporte) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(part_ae_esporte))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# AE: Programas de cultura
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+part_ae_cultura <- workbook2[[39]]
+part_ae_cultura <- part_ae_cultura[c(1:2), c(1,3,5,7)]
+
+part_ae_cultura %>%
+  gather(key, value, -part_ae_cultura) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(part_ae_cultura))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# AE: Programas de deficiência
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+part_ae_deficiencia <- workbook2[[40]]
+part_ae_deficiencia <- part_ae_deficiencia[c(1:2), c(1,3,5,7)]
+
+part_ae_deficiencia %>%
+  gather(key, value, -part_ae_deficiencia) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(part_ae_deficiencia))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# AE: Programas de inclusão digital
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+part_ae_incdigital <- workbook2[[41]]
+part_ae_incdigital <- part_ae_incdigital[c(1:2), c(1,3,5,7)]
+
+part_ae_incdigital %>%
+  gather(key, value, -part_ae_incdigital) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(part_ae_incdigital))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# AE: Programas Bolsa Permanência da UFFS
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+bp_uffs <- workbook2[[42]]
+bp_uffs <- bp_uffs[c(1:2), c(1,3,5,7)]
+
+bp_uffs %>%
+  gather(key, value, -bp_uffs) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(bp_uffs))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# AE: Programa Bolsa Permanência MEC
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+bp_mec <- workbook2[[43]]
+bp_mec <- bp_mec[c(1:2), c(1,3,5,7)]
+
+bp_mec %>%
+  gather(key, value, -bp_mec) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(bp_mec))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# AE: Programas de material didático
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+ae_mat_didatico <- workbook2[[44]]
+ae_mat_didatico <- ae_mat_didatico[c(1:2), c(1,3,5,7)]
+
+ae_mat_didatico %>%
+  gather(key, value, -ae_mat_didatico) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(ae_mat_didatico))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center, inverse
+# Categoria 4: Itinerários estudantis e perfil cultura
+---
+class: middle, center
+# Principal fonte de informação
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+fonte_informacao <- workbook2[[45]]
+fonte_informacao <- fonte_informacao[c(1:7), c(1,3,5,7)]
+
+
+fonte_informacao1 <- top_n(fonte_informacao, n = 3, UFFS)
+fonte_informacao2 <- top_n(fonte_informacao, n = -4, UFFS)
+
+fonte_informacao1$fonte_informacao <- c("Jornal; revista; \n portais de notícias","Blogs; \n Youtubers; etc.", "Twitter; \n Facebook; etc.")
+fonte_informacao2$fonte_informacao <- c("Mídia impressa", "Rádio", "Televisão", "Outros")
+
+
+fonte_informacao1 %>%
+  gather(key, value, -fonte_informacao) %>%
+  ggplot(aes(x = fonte_informacao, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "Greens") +
+  theme_light() +
+  geom_text_repel(aes(x = fonte_informacao, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1) 
+
+fonte_informacao2 %>%
+  gather(key, value, -fonte_informacao) %>%
+  ggplot(aes(x = fonte_informacao, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "Greens") +
+  theme_light() +
+  geom_text_repel(aes(x = fonte_informacao, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# Atualmente você reside no município onde cursa a graduação?
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+mora_onde_estuda <- workbook2[[47]]
+mora_onde_estuda <- mora_onde_estuda[c(1:2), c(1,3,5,7)]
+
+mora_onde_estuda %>%
+  gather(key, value, -mora_onde_estuda) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(mora_onde_estuda))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+--- 
+class: middle, center
+# Local onde mora:
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+onde_mora <- workbook2[[48]]
+onde_mora <- onde_mora[c(1:9), c(1,3,5,7)]
+
+onde_mora1 <- top_n(onde_mora, n = 4, UFFS)
+onde_mora2 <- top_n(onde_mora, n = -4, UFFS)
+
+onde_mora1$onde_mora <- c("Em República", "Na casa /n dos pais", "Sozinho", "Com companheiro(a) \n ou cônjuge")
+
+onde_mora2$onde_mora <- c("Em Pensão/Hotel/ \n Pensionato", "Em moradia da \n Universidade", "Na casa de \n outros familiares", "Na casa \n de amigos")
+
+onde_mora1 %>%
+  gather(key, value, -onde_mora) %>%
+  ggplot(aes(x = onde_mora, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = onde_mora, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
+
+onde_mora2 %>%
+  gather(key, value, -onde_mora) %>%
+  ggplot(aes(x = onde_mora, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = onde_mora, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# Como você se desloca para a universidade na maioria das vezes?
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+tipo_deslocamento <- workbook2[[49]]
+tipo_deslocamento <- tipo_deslocamento[c(1:7), c(1,3,5,7)]
+
+tipo_deslocamento1 <- top_n(tipo_deslocamento, n = 4, UFFS)
+tipo_deslocamento2 <- top_n(tipo_deslocamento, n = -4, UFFS)
+
+
+tipo_deslocamento1$tipo_deslocamento <- c("A pé", "Transporte próprio", "Transporte coletivo", "Transporte locado")
+
+tipo_deslocamento1 %>%
+  gather(key, value, -tipo_deslocamento) %>%
+  ggplot(aes(x = tipo_deslocamento, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = tipo_deslocamento, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1) 
+
+tipo_deslocamento2 %>%
+  gather(key, value, -tipo_deslocamento) %>%
+  ggplot(aes(x = tipo_deslocamento, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = tipo_deslocamento, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# Tempo de deslocamento até a universidade
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+tempo_deslc_univer <- workbook2[[50]]
+tempo_deslc_univer <- tempo_deslc_univer[c(1:6), c(1,3,5,7)]
+
+tempo_deslc_univer1 <- top_n(tempo_deslc_univer, n = 3, UFFS)
+tempo_deslc_univer2 <- top_n(tempo_deslc_univer, n = -3, UFFS)
+
+tempo_deslc_univer1 %>%
+  gather(key, value, -tempo_deslc_univer) %>%
+  ggplot(aes(x = tempo_deslc_univer, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = tempo_deslc_univer, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
+
+tempo_deslc_univer2 %>%
+  gather(key, value, -tempo_deslc_univer) %>%
+  ggplot(aes(x = tempo_deslc_univer, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = tempo_deslc_univer, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# Distância da universidade
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+dist_univer <- workbook2[[51]]
+dist_univer <- dist_univer[c(1:6), c(1,3,5,7)]
+
+dist_univer1 <- top_n(dist_univer, n = 3, UFFS)
+dist_univer2 <- top_n(dist_univer, n = -3, UFFS)
+
+dist_univer1 %>%
+  gather(key, value, -dist_univer) %>%
+  ggplot(aes(x = dist_univer, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = dist_univer, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
+
+dist_univer2 %>%
+  gather(key, value, -dist_univer) %>%
+  ggplot(aes(x = dist_univer, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = dist_univer, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
+```
+---
+class: middle, center
+# Você trabalha?
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+trabalho <- workbook2[[52]]
+trabalho <- trabalho[c(1:3), c(1,3,5,7)]
+
+trabalho$trabalho <- c( "Sim, tenho \n um trabalho", "Não trabalho e \n não estou à procura", "Não trabalho e \n estou a procura")
+
+trabalho %>%
+  gather(key, value, -trabalho) %>%
+  ggplot(aes(x = trabalho, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = trabalho, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
+```
+---
+class: middle, center
+# Qual vínculo do trabalho?
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+tipo_vinculo_trabaho <- workbook2[[53]]
+tipo_vinculo_trabaho <- tipo_vinculo_trabaho[c(1:9), c(1,3,5,7)]
+
+tipo_vinculo_trabaho1 <- top_n(tipo_vinculo_trabaho, n = 4, UFFS)
+tipo_vinculo_trabaho2 <- top_n(tipo_vinculo_trabaho, n = -4, UFFS)
+
+tipo_vinculo_trabaho2$tipo_vinculo_trabaho <- c("Trabalho sem \n carteira assinara", "Trabalho sem \n carteira assinada \n ou contrato \n ajudando familiares", "Trabalho com contrato \n em uma empresa, \n organização \n social ou órgão estatal", "Outro")
+
+tipo_vinculo_trabaho1 %>%
+  gather(key, value, -tipo_vinculo_trabaho) %>%
+  ggplot(aes(x = tipo_vinculo_trabaho, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = tipo_vinculo_trabaho, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
+
+tipo_vinculo_trabaho2 %>%
+  gather(key, value, -tipo_vinculo_trabaho) %>%
+  ggplot(aes(x = tipo_vinculo_trabaho, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = tipo_vinculo_trabaho, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
+```
+---
+class: middle, center
+# Renda familiar Bruta
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+renda_bruta_grupofamiliar <- workbook2[[55]]
+renda_bruta_grupofamiliar <- renda_bruta_grupofamiliar[c(1:336), c(1,3,5,7)]
+
+renda_bruta_grupofamiliar <- top_n(renda_bruta_grupofamiliar, n = 10, UFFS)
+
+renda_bruta_grupofamiliar %>%
+  gather(key, value, -renda_bruta_grupofamiliar) %>%
+  ggplot(aes(x = renda_bruta_grupofamiliar, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = renda_bruta_grupofamiliar, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
+```
+---
+class: middle, center
+# Número de pessoas no grupo familiar incluíndo o estudante
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+n_pessoas_grupofamiliar <- workbook2[[56]]
+n_pessoas_grupofamiliar <- n_pessoas_grupofamiliar[c(1:9), c(1,3,5,7)]
+
+n_pessoas_grupofamiliar %>%
+  gather(key, value, -n_pessoas_grupofamiliar) %>%
+  ggplot(aes(x = n_pessoas_grupofamiliar, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = n_pessoas_grupofamiliar, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# Consumo de bebida alcóolica
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+bebida_alcoolica <- workbook2[[58]]
+bebida_alcoolica <- bebida_alcoolica[c(1:5), c(1,3,5,7)]
+
+bebida_alcoolica$bebida_alcoolica <- c("Todos os dias", "Várias vezes \n por semana", "Nos finais \n de semana", "Menos do que \n uma vez \n por semana", "Nunca")
+
+bebida_alcoolica %>%
+  gather(key, value, -bebida_alcoolica) %>%
+  ggplot(aes(x = bebida_alcoolica, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = bebida_alcoolica, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
+```
+---
+class: middle, center
+# Consumo de tabaco:
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+uso_tabaco <- workbook2[[59]]
+uso_tabaco <- uso_tabaco[c(1:5), c(1,3,5,7)]
+
+uso_tabaco$uso_tabaco <- c("Todos os dias", "Várias vezes \n por semana", "Nos finais \n de semana", "Menos do que \n uma vez \n por semana", "Nunca")
+
+uso_tabaco %>%
+  gather(key, value, -uso_tabaco) %>%
+  ggplot(aes(x = uso_tabaco, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = uso_tabaco, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
+```
+---
+class: middle, center
+# Consumo de drogas não lícitas
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+uso_drogas <- workbook2[[60]]
+uso_drogas <- uso_drogas[c(1:5), c(1,3,5,7)]
+
+uso_drogas$uso_drogas <- c("Todos os dias", "Várias vezes \n por semana", "Nos finais \n de semana", "Menos do que \n uma vez \n por semana", "Nunca")
+
+uso_drogas %>%
+  gather(key, value, -uso_drogas) %>%
+  ggplot(aes(x = uso_drogas, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) + 
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_brewer(palette = "my_colors") +
+  theme_light() +
+  geom_text_repel(aes(x = uso_drogas, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
+```
+---
+class: middle, center
+# Já pensou em abandonar o curso?
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+pensou_abandonarcurso <- workbook2[[61]]
+pensou_abandonarcurso <- pensou_abandonarcurso[c(1:2), c(1,3,5,7)]
+
+pensou_abandonarcurso %>%
+  gather(key, value, -pensou_abandonarcurso) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(pensou_abandonarcurso))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# Pensa em trabalhar após se formar?
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+trabalhar_pos_formar <- workbook2[[62]]
+trabalhar_pos_formar <- trabalhar_pos_formar[c(1:2), c(1,3,5,7)]
+
+trabalhar_pos_formar %>%
+  gather(key, value, -trabalhar_pos_formar) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(trabalhar_pos_formar))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# Pensa em fazer outro curso de graduação após se formar?
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+fazer_outro_curso_grad <- workbook2[[63]]
+fazer_outro_curso_grad <- fazer_outro_curso_grad[c(1:2), c(1,3,5,7)]
+
+fazer_outro_curso_grad %>%
+  gather(key, value, -fazer_outro_curso_grad) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(fazer_outro_curso_grad))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# Pensa em fazer pós-graduação após se formar?
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+ingresso_pos <- workbook2[[64]]
+ingresso_pos <- ingresso_pos[c(1:2), c(1,3,5,7)]
+
+ingresso_pos %>%
+  gather(key, value, -ingresso_pos) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(ingresso_pos))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
+---
+class: middle, center
+# Não sabe o que fazer após se formar?
+```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+nao_sei <- workbook2[[65]]
+nao_sei <- nao_sei[c(1:2), c(1,3,5,7)]
+
+nao_sei %>%
+  gather(key, value, -nao_sei) %>%
+  ggplot(aes(x = key, y = value, fill = str_wrap(nao_sei))) +
+  ylab("%") +
+  xlab(" ") +
+  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
+  labs(fill="Resposta") +
+  scale_fill_manual(values = my_colors) +
+  theme(legend.key.height=unit(2, "cm"))+
+  geom_bar(stat = "identity")+
+  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
+```
