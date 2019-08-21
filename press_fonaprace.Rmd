@@ -6,13 +6,13 @@ institute: "Universidade Federal da Fronteira Sul - UFFS"
 date: "`r Sys.Date()`"
 output:
   xaringan::moon_reader:
-    css: [default, uo, rutgers-fonts]
     lib_dir: libs
+    css: [default, uo, default-fonts, animate.css]
     nature:
       ratio: 16:9
       highlightStyle: github
       highlightLines: true
-      countIncrementalSlides: false
+      countIncrementalSlides: true
 ---
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE, digits = 3)
@@ -31,12 +31,12 @@ library(RColorBrewer)
 library(ggpubr)
 ```
 
-background-image: url("https://raw.githubusercontent.com/mustachius/ProjetosR/master/Imagem1.png")
+background-image: url("https://www.uffs.edu.br/institucional/reitoria/diretoria_de_comunicacao/identidade_visual/identidade-visual-da-uffs-em-verde-com-fundo-transparente/@@download/file")
 background-position: top, 80%
 background-size: 30%
-class: center, middle
+class: center, middle, animated, fadeIn
 
-```{r PartUFFS, include=FALSE}
+```{r PartUFFS, include=FALSE, cache=TRUE}
 PartUFFS<-read.table("ParticipacaoUFFS.txt",header = T, sep = "\t", encoding="UTF-8")
 PartIFES<-read.csv("Ranking Detalhado das IFES.csv", header = T, encoding="UTF-8")
 aeUffs<-readRDS("aeUffs.rds")
@@ -61,32 +61,116 @@ posn_d<- position_dodge(width = 0.5)
 <br>
 
 # Apresentação
-
 Prof. Dr. Darlan Christiano Kroth <br>
 <a href="mailto:dckroth@uffs.edu.br"></i>&nbsp; dckroth@uffs.edu.br</a><br>
 
-# Slides remark.js:
-João Víctor Balestrin Sartor <br>
-<a href="mailto: joao.sartor@uffs.edu.br"></i>&nbsp; joao.sartor@uffs.edu.br</a><br>
+### Compilação de dados e slides remark.js:
+João Víctor Balestrin Sartor 
+<br><a href="mailto: joao.sartor@uffs.edu.br"></i>&nbsp; joao.sartor@uffs.edu.br</a><br>
 ---
-class: center, middle, inverse
+class: center, middle, inverse, animated, pulse
 
 # A Pesquisa
 ---
+class: center, middle, animated, fadeIn
+
+```{r echo=FALSE, fig.retina=5, fig.pos="h", out.width = "75%", cache=TRUE}
+include_graphics("https://raw.githubusercontent.com/mustachius/press-fonaprace/master/logopesquisa.png")
+```
+---
 # Pesquisa do Perfil Socioeconômico dos Estudantes das Instituições Federais de Ensino Superior
 
-## Organização: 
+## Organização:
+```{r, echo=F, fig.retina=5, out.width = "50%", fig.pos="htc", cache=TRUE, fig.align="center"}
+include_graphics("https://raw.githubusercontent.com/mustachius/press-fonaprace/master/logosinst.png")
+```
+
  - Associação Nacional dos Dirigentes das Intituições Federais de Ensino Superior - **Andifes**;
  - Fórum Nacional de Pró-Reitores de Assistência Estudantil - **FONAPRACE**;
- - Universidade Federal de São Carlos - **UFSCar**.
- 
- > A principal inovação desta Pesquisa, considerando a edição anterior, **é que ela foi censitária**, ou seja, **todos os estudantes das IFES foram convidados a participar**, o que contribuiu para o conhecimento do **perfil mais exato possível dos graduandos ativos nos cursos presenciais do país**.
+ - Universidade Federal de Uberlândia - **UFU**.
+ <br>
+ > A pesquisa teve como principal objetivo **descrever o perfil médio socioeconômico e cultural dos estudantes de graduação** das IFES, para fins de **conhecer o público** que está nas IFES e **subsidiar políticas públicas para os estudantes e para as IFES**.
+
+???
+- O que é Fonaprace (desde 1987);
+- Quais suas finalidades;
 
 ---
-class: center
+class: animated, fadeIn, center
+# 5ª edição da pesquisa do Perfil Discente das IFES (1996, 2003, 2010 e 2014)
+<br>
+<h3><b>Estudantes matriculados: 1.200.300;</h3>
+<br>
+<h3>Realizada pela <b>ANDIFES</b> em parceria com o <b>FONAPRACE</b>;</h3>
+<br>
+<h3>Pesquisa ficou aberta pelo período de <b>fevereiro a junho de 2018</b>.</h3>
+--
+
+<h3><p style="color:red">Várias formas de divulgação (email, site, banners, Facebook, Diálogos).</red></h3>
+--
+<h3>Respondentes: <b>426.664 estudantes</b> (35,5% do total de estudantes das 65 IFES).</h3>
+--
+<br />
+<h4> No cálculo do tamanho da amostra representativa da pop. (amostragem estratif, erro 1%, IC de 96% (amostra não-probabilística – método RAKING de ponderação) </h4>
+
+???
+- O processo de ponderação amostral, via método "Raking", fundamenta-se em um algoritmo que obtém pesos para as unidades amostrais de forma que, após a expansão amostral, obtém-se os mesmos totais e frequências relativas marginais para cada categoria de cada uma das variáveis auxiliares. 
+
+- Tamanho da amostra representativa: 167.462 (UFFS = 1.205)
+---
+class: animated, fadeIn, middle
+```{r, echo=F, fig.retina=5, out.width = "80%", fig.pos="htc", cache=TRUE, fig.align="center"}
+include_graphics("https://raw.githubusercontent.com/mustachius/press-fonaprace/master/telalogin_pesquisa.png")
+```
+
+???
+formulário com 81 questões
+---
+class: animated, fadeIn, center
+
+## - A UFFS participou com **3.027 discentes** (32% do total de estudantes matriculados na época).
+## - A quantidade de respondentes da UFFS equivaleu a **0,8% do total de estudantes das IFES** sendo a 28ª universidade com mais respostas (em termos de relação total de respondentes/total de matriculados). 
+## - As respostas por campus foram: **Chapecó** (36,5%), **Erechim** (18,4%), **Cerro Largo** (16,5%), **Realeza** (13,4%), **Laranjeiras do Sul** (12,2%) e **Passo Fundo** (3,0%).
+---
+class: animated, fadeIn
+# Importância da Pesquisa
+
+- Os resultados obtidos por esta pesquisa possibilitam o estabelecimento de um **debate público sobre o tema da AES**;
+
+- Tendo por base dados e informações sistematizadas a partir de **métodos cientificamente reconhecidos pela comunidade acadêmica**, que possam fundamentar a elaboração e o monitoramento das políticas de acesso e permanência nas IFES brasileiras;
+
+_Visando garantir o cumprimento dos objetivos estabelecidos no Art. 2º do Decreto nº 7.234/210 (PNAES), a saber:_ 
+
+>**I** – democratizar as condições de permanência dos jovens na educação superior pública federal; <br>
+**II** - minimizar os efeitos das desigualdades sociais e regionais na permanência e conclusão da educação superior;<br> 
+**III** - reduzir as taxas de retenção e evasão; e <br>
+**IV** - contribuir para a promoção da inclusão social pela educação.
+
+---
+class: animated, fadeIn
+# O Contexto da expansão das IFES (Democratização do ensino superior)
+
+>**I** - Ampliação do **número de IFES:** cursos, vagas; <br>
+**II** - **Interiorização** das IFES e dos campi; <br>
+**III** -  Maior **mobilidade territorial** via ENEM/SISU; <br>
+**IV**-	Reserva de **vagas para estudantes com origem em escolas públicas, por meio de cotas**: renda, PPI, pessoas com deficiência (Lei n. 12.711/212) <br>
+**V** - PNAES (Decreto n. 7234/2010)
+
+???
+Das 36 universidades brasileiras classificadas entre as melhores do mundo, 32 são públicas. As 20 universidades que mais produzem ciência no Brasil são públicas: 15 são universidades federais e 5 estaduais (EXAME, 2018).
+---
+class: center, animated, fadeIn
+#Evolução dos recursos do PNAES
+
+```{r, echo=F, fig.retina=5, out.width = "80%", fig.pos="htc", cache=TRUE, fig.align="center"}
+include_graphics("https://raw.githubusercontent.com/mustachius/press-fonaprace/master/tabela1.1.png")
+```
+
+---
+class: center, animated, fadeIn
 # Participação por estado
 
-```{r include=FALSE}
+```{r include=FALSE, cache=TRUE}
 by_uf<- PartUFFS %>%
   group_by(uf) %>%
   summarize(totalEst = sum(totalEstudantes), totalPart = sum(estParticipantes)) 
@@ -112,11 +196,11 @@ pby_uf <- ggplot(tidy_by_uf, aes(x = uf, y = value, fill = key))+
 ```
 
 .pull-left[
-```{r fig.retina = 4, echo=FALSE}
+```{r fig.retina = 4, echo=FALSE, cache=TRUE}
 pby_uf
 ```
 ]
-```{r echo=FALSE}
+```{r echo=FALSE, cache=TRUE}
 names(by_uf) <- c("Estado", "N° Estudantes", "Participantes")
 kby_uf<-kable(by_uf, format = "html")
 ```
@@ -128,9 +212,9 @@ kby_uf<-kable(by_uf, format = "html")
 `r kby_uf`
 ]
 ---
-class: center, middle
+class: center, middle, animated, fadeIn
 # Participação por campus da UFFS (em relação ao total)
-```{r, include=FALSE}
+```{r, include=FALSE, cache=TRUE}
 by_campus <- PartUFFS %>%
   group_by(campus) %>%
   summarize(total = sum(estParticipantes))
@@ -161,19 +245,20 @@ pby_curso <- ggplot(by_curso1, aes(x = curso, y = total)) +
 ``` 
 
 .pull-left[
-```{r fig.retina = 5, echo=FALSE}
+```{r fig.retina = 5, echo=FALSE, cache=TRUE}
 pby_campus
 ```
 ]
 
 .pull-rigth[
-```{r fig.retina = 5, echo = FALSE}
+```{r fig.retina = 5, echo = FALSE, cache=TRUE}
 pby_curso
 ```
 ]
 ---
+class: animated, fadeIn
 # Participação da UFFS em relação à outras IFES
-```{r echo=F, warning=F}
+```{r echo=F, warning=F, cache=TRUE}
 by_ifes<- PartIFES %>%
   mutate(p100 = porcentagem *100)
 
@@ -186,9 +271,9 @@ kable(by_ifes_tidy,"html", include.rownames = FALSE) %>%
   kable_styling()
 ```
 ---
-class: center, middle
+class: center, middle, animated, fadeIn
 # Participação por ano de ingresso
-```{r fig.retina = 5,ano_ingresso, echo=FALSE, warning=FALSE}
+```{r fig.retina = 5,ano_ingresso, echo=FALSE, warning=FALSE, cache=TRUE}
 by_ano_ingresso <- workbook2[[1]]
 names(by_ano_ingresso) <- c("Ano", "UFFS", "Sul", "Brasil")
 
@@ -210,33 +295,13 @@ by_ano_ingresso_freq %>%
   geom_text(aes(x = Ano, y = value, label = round(value)),position=position_stack(vjust=0.9), size = 2.5)
 ```
 ---
-class: center, middle, inverse
+class: center, middle, inverse, animated, fadeIn
 
 # Categoria 1: Perfil básico
 ---
-class: center, middle
-# País de origem diferente do Brasil
-```{r fig.retina = 5, echo=FALSE}
-by_pais <- workbook2[[5]]
-by_pais <- by_pais[c(1:6), c(1,3,5,7)]
-
-by_pais_tidy <- by_pais %>%
-  gather(key, value, -pais_nasc) %>%
-  filter(pais_nasc != "Brasil")
-
-by_pais_tidy %>%  
-  ggplot(aes(x=pais_nasc, y=value, fill=key)) +
-  scale_fill_manual(values = my_colors) + 
-  ylab("%") +
-  xlab(" ") +
-  geom_bar(stat = "identity") +
-  theme_light() +
-  geom_text_repel(aes(x = pais_nasc, y = value, label = round(value, digits = 3)),position=position_stack(0.5), size = 2.5, vjust = 1) 
-```
----
-class: center, middle
+class: center, middle, animated, fadeIn
 # Por estado de origem
-```{r fig.retina=5, by_uf, echo=F}
+```{r fig.retina=5, by_uf, echo=F, cache=TRUE}
 by_uf<-workbook2[[6]]
 by_uf<- by_uf[c(1:29), c(1,3,5,7)]
 by_uf_top10<-top_n(by_uf, 6, UFFS)
@@ -254,10 +319,10 @@ ggplot(by_uf_top10, aes(x = estado_nasc, y = value, fill = key)) +
   geom_text_repel(aes(x = estado_nasc, y = value, label = round(value)),position=position_stack(vjust=0.9), size = 2.5, vjust = 1)
 ```
 ---
-class: center, middle
+class: center, middle, animated, fadeIn
 
 # Participantes por sexo
-```{r by_sexo, echo=F, include=F}
+```{r by_sexo, echo=F, include=F, cache=TRUE}
 by_sexo <- workbook2[[7]]
 by_sexo <- by_sexo[c(1:3), c(1,3,5,7)]
 
@@ -275,15 +340,21 @@ pby_sexo<-ggplot(by_sexo_tidy, aes(x = sexo, y = value, fill = key)) +
 ```
 
 
-```{r fig.retina=5, echo=F}
+```{r fig.retina=5, echo=F, cache=TRUE}
 pby_sexo
+```
+---
+class: center, middle, animated, fadeIn
+
+```{r, echo=F, fig.retina=5, out.width = "90%", fig.pos="htc", cache=TRUE, fig.align="center"}
+include_graphics("https://raw.githubusercontent.com/mustachius/press-fonaprace/master/Tabela1.6.png")
 ```
 
 ---
-class: center, middle
+class: center, middle, animated, fadeIn
 
 # Por Gênero
-```{r by_genero, echo=F, warning=FALSE}
+```{r by_genero, echo=F, warning=FALSE, cache=TRUE}
 by_genero <- workbook2[[8]]
 by_genero <- by_genero[c(1:8), c(1,3,5,7)]
 
@@ -313,22 +384,26 @@ pby_genero2 <- ggplot(by_genero_tidy2, aes(x = genero, y = value, fill = key)) +
 ```
 
 .pull-left[
-```{r fig.retina = 5, echo=F, warning=F}
+```{r fig.retina = 5, echo=F, warning=F, cache=TRUE}
 pby_genero1
 ```
 ]
 
 .pull-rigth[
-```{r fig.retina = 5, echo = F, warning=F}
+```{r fig.retina = 5, echo = F, warning=F, cache=TRUE}
 pby_genero2
 ```
 ]
+
+???
+**Esquerda** : Top 4 respostas
+**Direita**: 4 menos respondidas
 ---
-class: center, middle
+class: center, middle, animated, fadeIn
 
 # Por orientação sexual
 
-```{r fig.retina = 5, echo = F, warning = F, message=FALSE}
+```{r fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 by_orient_sex <- workbook2[[9]]
 by_orient_sex <- by_orient_sex[c(1:8), c(1,3,5,7)]
 
@@ -354,11 +429,16 @@ by_orient_sex_tidy2%>%
   theme_light() +
   geom_text(aes(x = ori_sex, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
 ```
+
+???
+**Esquerda** : Top 4 respostas
+**Direita**: 4 menos respondidas
+
 ---
-class: center, middle
+class: center, middle, animated, fadeIn
 
 # Por auto-declaração de cor
-```{r fig.retina = 5, echo = F, warning = F, message=FALSE}
+```{r fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 by_cor <- workbook2[[10]]
 by_cor <- by_cor[c(1:8), c(1,3,5,7)]
 
@@ -384,12 +464,20 @@ by_cor_tidy2 %>%
   theme_light() +
   geom_text(aes(x = cor, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
 ```
+
+???
+- o nr total de matrículas de estudantes indígenas passou de 6014 (2014) para 10.736 (2018) : efeito PBP
 ---
-class: center, middle
+class: center, middle, animated, fadeIn
+```{r, echo=F, fig.retina=5, out.width = "80%", fig.pos="htc", cache=TRUE, fig.align="center"}
+include_graphics("https://raw.githubusercontent.com/mustachius/press-fonaprace/master/tabela1.10.png")
+```
+---
+class: center, middle, animated, fadeIn
 
 # Estado civil / Situação conjugal atual:
 
-```{r fig.retina = 5, echo = F, warning = F, message=FALSE}
+```{r fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 by_estadocivil <- workbook2[[11]]
 by_estadocivil <- by_estadocivil[c(1:4), c(1,3,5,7)]
 
@@ -420,11 +508,11 @@ by_estadocivil_tidy2 %>%
 ```
 
 ---
-class: center, middle
+class: center, middle, animated, fadeIn
 
 # Você tem filhos? / Algum de seus filhos mora com você?
 
-```{r fig.retina = 5, echo = F, warning = F, message=FALSE}
+```{r fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 by_filhos <- workbook2[[12]]
 by_filhos <- by_filhos[c(1:5), c(1,3,5,7)]
 
@@ -453,7 +541,7 @@ by_mora_filhos %>%
 
 ```
 ---
-class: center, middle
+class: center, middle, animated, fadeIn
 
 # Você tem filhos de 0 e 5 anos?
 
@@ -486,16 +574,21 @@ by_filhos_5anos_tidy2 %>%
   theme_light() +
   geom_text(aes(x = quant_filhos05anos, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
 ```
+???
+falar do auxílio-creche
+
 ---
-Class: center, middle
+class: center, middle, animated, fadeIn
 
 # Em seu perído de aula, onde ou com quem ficam seus filhos(as) de 0 a 5 anos?
 
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 local_filho <- workbook2[[15]]
 local_filho <- local_filho[c(1:8), c(1,3,5,7)]
+local_filho$ondefica_filho<- c("Não se aplica", "Creche da \n Universidade", "Inst. \n Pública", "Inst. \n Privada", "Familiares", "Babá / \n Empregada Doméstica", "Traz para \n a universidade", "Sozinho")
 
 local_filho_tidy1 <- top_n(local_filho, n = 4, UFFS)
+local_filho_tidy2 <- top_n(local_filho, n = -4, UFFS)
 
 local_filho_tidy1 %>%
   gather(key, value, -ondefica_filho) %>%
@@ -507,13 +600,23 @@ local_filho_tidy1 %>%
   theme_light() +
   geom_text(aes(x = ondefica_filho, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
 
+local_filho_tidy2 %>%
+  gather(key, value, -ondefica_filho) %>%
+  ggplot(aes(x = ondefica_filho, y = value, fill = key)) +
+  geom_bar(stat = "identity", position = posn_d) +
+  ylab("%") +
+  xlab(" ") +
+  scale_fill_manual(values = my_colors) +
+  theme_light() +
+  geom_text(aes(x = ondefica_filho, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
+
 ```
 ---
-class: middle, center, inverse
+class: middle, center, inverse, animated, fadeIn
 
 # Categoria 2: Itinerários estudantis e perfil acadêmico
 ---
-classe: middle, center
+class: middle, center, animated, fadeIn
 # A maior parte do Ensino Médio que você cursou foi:
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 by_em <- workbook2[[16]]
@@ -530,7 +633,7 @@ by_em %>%
   geom_text_repel(aes(x = grad_em, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
 ```
 ---
-class: center, middle 
+class: center, middle, animated, fadeIn 
 # Você frequentou algum cursinho antes de ingressar na universidade?
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 by_cursinho <- workbook2[[18]]
@@ -549,7 +652,7 @@ by_cursinho %>%
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1)
 ```
 ---
-class: center, middle
+class: center, middle, animated, fadeIn
 # Como você ingressou nesta universidade?
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 forma_ingresso <- workbook2[[19]]
@@ -580,7 +683,7 @@ forma_ingresso2 %>%
 
 ```
 ---
-class: center, middle
+class: center, middle, animated, fadeIn
 # O seu ingresso nesta universidade foi através de:
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 tipo_ingresso <- workbook2[[20]]
@@ -597,7 +700,7 @@ tipo_ingresso %>%
   geom_text_repel(aes(x = forma_ingresso2, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)
 ```
 ---
-class: center, middle
+class: center, middle, animated, fadeIn
 #A cota em que você ingressou é de escola pública? / Pretos, pardos indígenas?
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 cota_escola <- workbook2[[21]]
@@ -627,7 +730,7 @@ cotas_ppindi %>%
   geom_text_repel(aes(x = cotas_ppindigenas, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
 ```
 ---
-class: center, middle
+class: center, middle, animated, fadeIn
 # A cota em que você ingressou é para renda bruta per capita igual ou inferior a 1,5 salários mínimos?
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 renda_15sm <- workbook2[[23]]
@@ -643,8 +746,28 @@ renda_15sm %>%
   theme_light() +
   geom_text_repel(aes(x = Renda_1.5sm, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
 ```
+???
+- destacar que a maioria dos estudantes estão tendo acesso ao ensino superior na primeira geração da família.
 ---
-class: center, middle
+class: center, middle, animated, fadeIn
+# Percentual de graduandos(as) das IFES que cursaram o ensino médio exclusivamente em escolas públicas - 2003 a 2018
+```{r fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
+ano <- c(1996, 2003, 2010, 2014, 2018)
+perc <- c(0, 37.50, 44.80, 60.16, 60.40)
+
+dt1<- data.frame(ano,perc)
+
+ggplot(dt1, aes(x=ano, y=perc))+
+  geom_line()+
+  scale_x_continuous(breaks = ano) +
+  ylab("%") +
+  xlab(" ") +
+  theme_light()+
+  geom_text_repel(aes(x=ano, y=perc, label=perc), size = 2.5,position=position_dodge(0.5), vjust = 1)+
+  labs(caption = "Fonte: ANDIFES/FONAPRACE, 2019.V Pesquisa Nacional de Perfil Socioeconômico e Cultural dos (as) Graduandos (as) das IFES.")
+```
+---
+class: center, middle, animated, fadeIn 
 # Você participa de alguma atividade ou programa ACADÊMICO?
 .pull-left[###Extensão
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
@@ -680,11 +803,11 @@ grad_pes %>%
 ```
 ]
 ---
-class: middle, center, inverse
+class: middle, center, inverse, animated, fadeIn
 # Itinerários estudantis e perfil cultural
 ## Assistência Estudantil
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Você participa ou participou de algum Programa de Assistência Estudantil oferecido pela sua Universidade? 
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 tidy_aeUffs<-aeUffs %>%
@@ -706,7 +829,7 @@ tidy_aeUffs_semtotal %>%
   geom_bar(stat = "identity")
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # AE: Programas de alimentação
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 part_ae_alim <- workbook2[[31]]
@@ -725,7 +848,7 @@ part_ae_alim %>%
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # AE: Programas de Moradia
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 part_ae_moradia <- workbook2[[32]]
@@ -745,7 +868,7 @@ part_ae_moradia %>%
 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # AE: Programas de atendimento psicológico
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 part_ae_psico <- workbook2[[33]]
@@ -764,7 +887,7 @@ part_ae_psico %>%
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # AE: Programas de apoio pedagógico
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 part_ae_apoioped <- workbook2[[34]]
@@ -783,7 +906,7 @@ part_ae_apoioped %>%
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # AE: Programas de saúde e atendimento médico
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 part_ae_atendmed <- workbook2[[35]]
@@ -803,7 +926,7 @@ part_ae_atendmed %>%
 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # AE: Programas de transporte
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 
@@ -823,8 +946,11 @@ part_ae_transp %>%
   geom_bar(stat = "identity")+
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
+
+???
+- Suporte do poder público. Políticas intersetoriais
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # AE: Programas de auxílio creche
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 
@@ -844,7 +970,7 @@ part_ae_creche %>%
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # AE: Programas de esporte
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 part_ae_esporte <- workbook2[[38]]
@@ -862,8 +988,11 @@ part_ae_esporte %>%
   geom_bar(stat = "identity")+
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
+
+???
+- Poucos estudantes fazem atividades físicas. **Falar dos JUFFS** e formas alternativa de praticar atividade física, como caminhadas e corrida.
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # AE: Programas de cultura
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 part_ae_cultura <- workbook2[[39]]
@@ -882,7 +1011,7 @@ part_ae_cultura %>%
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # AE: Programas de deficiência
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 part_ae_deficiencia <- workbook2[[40]]
@@ -901,7 +1030,7 @@ part_ae_deficiencia %>%
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center,  animated, fadeIn
 # AE: Programas de inclusão digital
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 part_ae_incdigital <- workbook2[[41]]
@@ -920,26 +1049,7 @@ part_ae_incdigital %>%
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
-# AE: Programas Bolsa Permanência da UFFS
-```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
-bp_uffs <- workbook2[[42]]
-bp_uffs <- bp_uffs[c(1:2), c(1,3,5,7)]
-
-bp_uffs %>%
-  gather(key, value, -bp_uffs) %>%
-  ggplot(aes(x = key, y = value, fill = str_wrap(bp_uffs))) +
-  ylab("%") +
-  xlab(" ") +
-  scale_x_discrete(labels = c("Brasil","Sul","UFFS")) +
-  labs(fill="Resposta") +
-  scale_fill_manual(values = my_colors) +
-  theme(legend.key.height=unit(2, "cm"))+
-  geom_bar(stat = "identity")+
-  geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
-```
----
-class: middle, center
+class: middle, center, animated, fadeIn
 # AE: Programa Bolsa Permanência MEC
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 bp_mec <- workbook2[[43]]
@@ -958,7 +1068,7 @@ bp_mec %>%
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center,  animated, fadeIn
 # AE: Programas de material didático
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 ae_mat_didatico <- workbook2[[44]]
@@ -977,10 +1087,10 @@ ae_mat_didatico %>%
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center, inverse
+class: middle, center, inverse, animated, fadeIn
 # Categoria 4: Itinerários estudantis e perfil cultura
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Principal fonte de informação
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 fonte_informacao <- workbook2[[45]]
@@ -1015,7 +1125,7 @@ fonte_informacao2 %>%
   geom_text_repel(aes(x = fonte_informacao, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Atualmente você reside no município onde cursa a graduação?
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 mora_onde_estuda <- workbook2[[47]]
@@ -1033,8 +1143,11 @@ mora_onde_estuda %>%
   geom_bar(stat = "identity")+
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
+
+???
+Perfil de nosso estudante, grande parcela reside em municípios vizinhos.
 --- 
-class: middle, center
+class: middle, center, animated, fadeIn
 # Local onde mora:
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 onde_mora <- workbook2[[48]]
@@ -1068,7 +1181,7 @@ onde_mora2 %>%
   geom_text_repel(aes(x = onde_mora, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Como você se desloca para a universidade na maioria das vezes?
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 tipo_deslocamento <- workbook2[[49]]
@@ -1101,7 +1214,7 @@ tipo_deslocamento2 %>%
   geom_text_repel(aes(x = tipo_deslocamento, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Tempo de deslocamento até a universidade
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 tempo_deslc_univer <- workbook2[[50]]
@@ -1131,7 +1244,7 @@ tempo_deslc_univer2 %>%
   geom_text_repel(aes(x = tempo_deslc_univer, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Distância da universidade
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 dist_univer <- workbook2[[51]]
@@ -1161,7 +1274,7 @@ dist_univer2 %>%
   geom_text_repel(aes(x = dist_univer, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Você trabalha?
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 trabalho <- workbook2[[52]]
@@ -1180,16 +1293,16 @@ trabalho %>%
   geom_text_repel(aes(x = trabalho, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Qual vínculo do trabalho?
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 tipo_vinculo_trabaho <- workbook2[[53]]
-tipo_vinculo_trabaho <- tipo_vinculo_trabaho[c(1:9), c(1,3,5,7)]
+tipo_vinculo_trabaho <- tipo_vinculo_trabaho[c(1:7), c(1,3,5,7)]
 
-tipo_vinculo_trabaho1 <- top_n(tipo_vinculo_trabaho, n = 4, UFFS)
+tipo_vinculo_trabaho$tipo_vinculo_trabaho <- c("Trabalho com \n carteira assinada", "Trabalho sem \n carteira assinada", "Trabalho sem \n carteira assinada \n ou contrato \n ajudando familiares", "Trabalho com contrato \n em uma empresa, \n organização \n social ou órgão estatal", "Sou estagiário", "Sou funcionário \n público", "Outro")
+
+tipo_vinculo_trabaho1 <- top_n(tipo_vinculo_trabaho, n = 3, UFFS)
 tipo_vinculo_trabaho2 <- top_n(tipo_vinculo_trabaho, n = -4, UFFS)
-
-tipo_vinculo_trabaho2$tipo_vinculo_trabaho <- c("Trabalho sem \n carteira assinara", "Trabalho sem \n carteira assinada \n ou contrato \n ajudando familiares", "Trabalho com contrato \n em uma empresa, \n organização \n social ou órgão estatal", "Outro")
 
 tipo_vinculo_trabaho1 %>%
   gather(key, value, -tipo_vinculo_trabaho) %>%
@@ -1212,7 +1325,7 @@ tipo_vinculo_trabaho2 %>%
   geom_text_repel(aes(x = tipo_vinculo_trabaho, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Renda familiar Bruta
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 renda_bruta_grupofamiliar <- workbook2[[55]]
@@ -1230,8 +1343,31 @@ renda_bruta_grupofamiliar %>%
   theme_light() +
   geom_text_repel(aes(x = renda_bruta_grupofamiliar, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
 ```
+
+???
+- falar da diferenciação entre vulnerabilidades (Serviço social) e o que o relatório considera dá ênfase a privação de renda: renda familiar mensal per capita (em razão do próprio PNAES, que faz referência a este indicador).
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
+```{r, echo=F, fig.retina=5, out.width = "80%", fig.pos="htc", cache=TRUE, fig.align="center"}
+include_graphics("https://raw.githubusercontent.com/mustachius/press-fonaprace/master/tabela1.15.png")
+```
+---
+class: middle, center, animated, fadeIn
+```{r, echo=F, fig.retina=5, out.width = "80%", fig.pos="htc", cache=TRUE, fig.align="center"}
+include_graphics("https://raw.githubusercontent.com/mustachius/press-fonaprace/master/grafico1.4.png")
+```
+---
+class: middle, center, animated, fadeIn
+```{r, echo=F, fig.retina=5, out.width = "75%", fig.pos="htc", cache=TRUE, fig.align="center"}
+include_graphics("https://raw.githubusercontent.com/mustachius/press-fonaprace/master/grafico1.5.png")
+```
+---
+class: middle, center, animated, fadeIn
+##Na UFFS, a renda familiar mensal per capita ficou em **R$ 1.012,72**, sendo que **70,5%** dos estudantes se enquadram até essa renda per capita. <br>
+##Quando considerada a renda de **até 1,5 salários mínimos**, o percentual alcança **84,4% dos estudantes.**
+
+---
+class: middle, center, animated, fadeIn
 # Número de pessoas no grupo familiar incluíndo o estudante
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 n_pessoas_grupofamiliar <- workbook2[[56]]
@@ -1248,7 +1384,7 @@ n_pessoas_grupofamiliar %>%
   geom_text_repel(aes(x = n_pessoas_grupofamiliar, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Consumo de bebida alcóolica
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 bebida_alcoolica <- workbook2[[58]]
@@ -1267,7 +1403,7 @@ bebida_alcoolica %>%
   geom_text_repel(aes(x = bebida_alcoolica, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Consumo de tabaco:
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 uso_tabaco <- workbook2[[59]]
@@ -1286,7 +1422,7 @@ uso_tabaco %>%
   geom_text_repel(aes(x = uso_tabaco, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Consumo de drogas não lícitas
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 uso_drogas <- workbook2[[60]]
@@ -1305,7 +1441,7 @@ uso_drogas %>%
   geom_text_repel(aes(x = uso_drogas, y = value, label = round(value, digits = 2)),position=position_dodge(0.5), size = 2.5, vjust = 1)  
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Já pensou em abandonar o curso?
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 pensou_abandonarcurso <- workbook2[[61]]
@@ -1324,7 +1460,7 @@ pensou_abandonarcurso %>%
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Pensa em trabalhar após se formar?
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 trabalhar_pos_formar <- workbook2[[62]]
@@ -1343,7 +1479,7 @@ trabalhar_pos_formar %>%
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Pensa em fazer outro curso de graduação após se formar?
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 fazer_outro_curso_grad <- workbook2[[63]]
@@ -1362,7 +1498,7 @@ fazer_outro_curso_grad %>%
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Pensa em fazer pós-graduação após se formar?
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 ingresso_pos <- workbook2[[64]]
@@ -1381,7 +1517,7 @@ ingresso_pos %>%
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
 ---
-class: middle, center
+class: middle, center, animated, fadeIn
 # Não sabe o que fazer após se formar?
 ```{r, fig.retina = 5, echo = F, warning = F, message=FALSE, cache=TRUE}
 nao_sei <- workbook2[[65]]
@@ -1399,3 +1535,60 @@ nao_sei %>%
   geom_bar(stat = "identity")+
   geom_text_repel(aes(x = key, y = value, label = round(value, digits = 2)),position=position_stack(0.5), size = 2.5, vjust = 1) 
 ```
+---
+class: middle, center, inverse, animated, fadeIn
+# Considerações finais
+---
+class: animated, fadeIn
+##A partir dos resultados da V Pesquisa do Perfil Discente possível concluir que:
+
+1. Os resultados apresentados demonstram de maneira inequívoca, que as políticas de expansão e interiorização do ensino superior público, associadas às mudanças implementadas nas políticas de ingresso, por meio do sistema ENEN/SISU e pela Lei de Cotas, tiveram um impacto decisivo na mudança do perfil dos estudantes matriculados nas IFES, de sorte que estas passaram a espelhar a heterogeneidade presente na sociedade brasileira.
+
+--
+
+2. A expansão do sistema de educação superior público, liderado pelas IFES, nos últimos quinze anos, consolidou à tendência de aumento do público do sexo feminino, ao mesmo tempo em que possibilitou uma progressiva inclusão racial, rompendo com o histórico de exclusão dos estudantes pretos, pardos e indígenas, anteriormente observado. 
+---
+class: animated, fadeIn
+##A partir dos resultados da V Pesquisa do Perfil Discente possível concluir que:
+
+<ol start="3">
+    <li>Pela primeira vez no espectro temporal das pesquisas de perfil realizadas pelo FONAPRACE/ANDIFES, observou-se que a soma dos estudantes autodeclarados pretos e pardos alcançou a maioria absoluta do universo pesquisado, representando 51,2% do total, ficando bastante próxima dos percentuais encontrados na população brasileira, naquelas pessoas autodeclaradas pretas e pardas representam 60,6% do total (PNAD/IBGE).</li>
+</ol>
+--
+
+<ol start="4">
+    <li>Os resultados divulgados pelas pesquisas do FONAPRACE/ANDIFES contrariam frontalmente as conclusões apresentadas no documento divulgado pelo Banco Mundial, em 2017, intitulado: Um Ajuste Justo: Análise da eficiência e equidade do gasto público no Brasil, no qual conclui que: “(...)A pequena minoria de estudantes que frequentam universidades públicas no Brasil tende a ser de famílias mais ricas que frequentaram escolas primárias e secundárias privadas (BancoMundial, 2017, p.131).</li>
+</ol>
+
+--
+
+*Estudo que é utilizado como referência da atual gestão do MEC para propor novos programas ou exclusão de existentes.*
+---
+class: animated, fadeIn
+##A partir dos resultados da V Pesquisa do Perfil Discente possível concluir que:
+
+<ol start="5">
+    <li>Contudo, os resultados divulgados nas duas últimas pesquisas realizadas pelo FONAPRACE/ANDIFES são suficientes para refutar os argumentos em favor da cobrança de mensalidades nas universidades, pois demonstram que a maioria dos estudantes possuírem renda mensal familiar per capita de até 1,5 salários mínimos, estando dentro dos critérios de elegibilidade do PNAES. Este público de estudantes já enfrenta dificuldades de permanência nas IFES, em razão dos recursos aportados no PNAES serem insuficientes para cobrir a totalidade da demanda por assistência estudantil</li>
+</ol>
+
+--
+
+<ol start="6">
+    <li>Neste contexto, não é crível supor que este público de estudantes teria condições de arcar com o pagamento de mensalidades. A implementação de uma política desta natureza, além de ser flagrantemente inconstitucional, já que está em desacordo com o inciso IV do Art. 206 da Constituição Federal, ocasionaria um abandono em massa dos estudantes em situação de vulnerabilidade socioeconômica das IFES, promovendo um retrocesso, sem precedentes, no processo de democratização e inclusão no ensino superior público observado nos últimos 15 anos.</li>
+</ol>
+---
+class: animated, fadeIn
+##A partir dos resultados da V Pesquisa do Perfil Discente possível concluir que:
+
+<ol start="7">
+    <li>Por tudo o que foi exposto, os resultados divulgados na 5ª edição da pesquisa realizada pela ANDIFES/FONAPRACE atestam a importância da alocação de recursos orçamentários para a manutenção dos programas e ações de AES, com vistas à permanência dos estudantes com renda mensal familiar per capita de até 1,5 salários mínimos nas IFES.</li>
+</ol>
+
+--
+- Novo perfil discente, exige maior volume de investimentos (PNAES);
+- Não apenas financeiro (custeio), mas de capital e de recursos humanos;
+---
+class: middle, center, inverse
+
+# Obrigado!
+
